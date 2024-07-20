@@ -12,8 +12,9 @@ class Animal {
 
   private ArrayList<Spine> buildSpines() {
     ArrayList<Spine> deltaSpines = new ArrayList<>();
+    vector2 position = new vector2(random(0, width), random(0, height));
     for (int i = 0; i < this.bodysize.length; i++) {
-      deltaSpines.add(new Spine(this.bodysize[i], new vector2(width/2 + i * 7 * animalScale, height/2)));
+      deltaSpines.add(new Spine(this.bodysize[i], new vector2((i * 7 * animalScale) + position.x, height - position.y)));
     }
     return deltaSpines;
   }
@@ -26,12 +27,12 @@ class Animal {
         if (mousePressed) {
           spine.acceleration.add(spine.position.copy().add(new vector2(mouseX, height-mouseY).mult(-1)).mult(-0.002));
         } else {
-          spine.acceleration.add(new vector2(noise(millis()/500f + this.randomSeed) - 0.475, noise(millis()/500f+this.randomSeed+500) - 0.475).mult(1));
+          //spine.acceleration.add(new vector2(noise(millis()/500f + this.randomSeed) - 0.475, noise(millis()/500f+this.randomSeed+500) - 0.475).mult(1));
         }
       }
 
       if (i != spines.size()-1) {
-        spine.joinLink(this.spines.get(i+1), 7 * animalScale);
+        //spine.joinLink(this.spines.get(i+1), 7 * animalScale);
       }
       if (i != spines.size()-1 && i != 0) {
         spine.limitAngle(this.spines.get(i-1), spine, this.spines.get(i+1), 45);
@@ -44,19 +45,32 @@ class Animal {
     println("WormDone\n");
   }
 
+  public void renderDebug() {
+    push();
+    stroke(255);
+    strokeWeight(5);
+    for (int i = 0; i < this.spines.size()-1; i++) {
+      Spine spine = this.spines.get(i);
+      Spine nextSpine = this.spines.get(i+1);
+      circle(spine.position.x, height - spine.position.y, 20);
+      line(spine.position.x, height - spine.position.y, nextSpine.position.x, height - nextSpine.position.y);
+    }
+    pop();
+  }
+
   public void render() {
     Spine lastSpine = spines.get(0);
 
     //vector2 lastRight = lastLeft;
 
     push();
-    
+
     PShape body = createShape();
     body.beginShape();
     body.curveVertex(lastSpine.position.x, height - lastSpine.position.y);
-  
+
     vector2[] side = new vector2[this.spines.size()-1];
-  
+
     Spine spine = this.spines.get(1);
 
     strokeWeight(animalScale);
@@ -84,16 +98,16 @@ class Animal {
       lastSpine = spine;
     }
 
-    body.vertex(lastSpine.position.x, height - lastSpine.position.y);
-    
-    for(int i = side.length-1; i > 0; i--) {
+    body.curveVertex(lastSpine.position.x, height - lastSpine.position.y);
+
+    for (int i = side.length-1; i > 0; i--) {
       body.curveVertex(side[i].x, side[i].y);
     }
-    
+
     body.endShape(CLOSE);
-    
+
     shape(body, 0, 0);
-    
+
     pop();
   }
 }

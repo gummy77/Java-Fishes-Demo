@@ -14,13 +14,14 @@ class Spine {
     this.velocity.mult(0.99);
 
     //this.acceleration.clampMagnitude(5);
+    this.repulse();
 
     this.velocity.add(acceleration);
     this.position.add(this.velocity);
 
     this.checkWalls();
 
-    acceleration = new vector2(0, 0);
+    this.acceleration = new vector2(0, 0);
   }
 
   public void render() {
@@ -61,17 +62,52 @@ class Spine {
     vector2 vecIntoB = spineB.position.copy().sub(spineC.position.copy());
     vector2 vecAIntoB = spineB.position.copy().sub(spineA.position.copy());
 
-    vector2 temp = vecIntoA.copy().sub(vecIntoB.copy()); //AAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-    float angleDiff = atan2(temp.y, temp.x) * 57.29577;
+    //spineA.acceleration.add(vecIntoB.normalize());
 
-    println(angleDiff);
+    float numerator = (vecIntoA.x * vecIntoB.y) - (vecIntoA.y * vecIntoB.x);
+    float denominator = vecIntoA.magnitude() * vecIntoA.magnitude();
+    
+    
+    float angleDiff = asin(numerator/denominator) * 57.29577;
+
+     //println(angleDiff);
 
     if (angleDiff > angleLimit) {
-      println("adjusting");
-      spineB.position = spineA.position.copy().add(vecAIntoB.copy().rotate(angleLimit-1));
+      //println("adjusting");
+      spineB.acceleration.add(vecIntoA.rotate(45).normalize().mult(2));
     } else if (angleDiff < -angleLimit) {
-      println("adjusting");
-      spineB.position = spineA.position.copy().add(vecAIntoB.copy().rotate(-angleLimit+1));
+      spineB.acceleration.add(vecIntoA.rotate(-45).normalize().mult(2));
+    }
+  }
+  
+  private void repulse() {
+    for (int i = 0; i < animals.length; i++) {
+      Animal animal = animals[i];
+      
+      for (int j = 0; j < animal.spines.size(); j++) {
+        Spine other = animal.spines.get(j);
+        if(other == this) continue;
+        
+        vector2 direction = this.position.copy().sub(other.position.copy()).normalize();
+        float distance = this.position.dist(other.position.copy());
+        
+        if(distance < 6 * animalScale) {
+          float force = (6 * animalScale) - distance;
+          
+          force = abs(min(max(0, force), 5 * animalScale));
+        
+          direction.setMagnitude(force * 0.01);
+        
+          other.acceleration.add(direction.copy().mult(-1));
+          this.acceleration.add(direction.copy().mult(1));
+          
+          
+          println("REPULSION");
+          stroke(255,0,0);
+          strokeWeight(2);
+          line(this.position.x, height - this.position.y, this.position.x + direction.copy().mult(105).x, (height - this.position.y) - direction.copy().mult(105).y);
+        }
+      }
     }
   }
 

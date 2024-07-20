@@ -32,9 +32,13 @@ class vector2 {
     return this;
   }
 
+  public float angle() {
+    return atan2(this.y, this.x) * 57.29577;
+  }
+
   public vector2 rotate(float degrees) {
-    float sin = sin(degrees * PI/180);
-    float cos = cos(degrees * PI/180);
+    float sin = sin(-degrees * PI/180);
+    float cos = cos(-degrees * PI/180);
 
     float x = (cos * this.x) - (sin * this.y);
     float y = (sin * this.x) + (cos * this.y);
@@ -47,6 +51,10 @@ class vector2 {
 
   public vector2 tangent() {
     return new vector2(this.y, this.x);
+  }
+
+  public float dist(vector2 other) {
+    return sqrt(sq(this.x - other.x) + sq(this.y - other.y));
   }
 
   public vector2 setMagnitude(float magnitude) {
