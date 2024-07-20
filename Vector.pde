@@ -73,3 +73,14 @@ class vector2 {
     return new vector2(this.x, this.y);
   }
 }
+class vector3 {
+  float x;
+  float y;
+  float z;
+  
+  vector3(float _x, float _y, float _z) {
+    this.x = _x;
+    this.y = _y;
+    this.z = _z;
+  }
+}

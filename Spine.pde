@@ -74,9 +74,9 @@ class Spine {
 
     if (angleDiff > angleLimit) {
       //println("adjusting");
-      spineB.acceleration.add(vecIntoA.rotate(45).normalize().mult(2));
+      //spineB.acceleration.add(vecIntoA.rotate(45).normalize().mult(2));
     } else if (angleDiff < -angleLimit) {
-      spineB.acceleration.add(vecIntoA.rotate(-45).normalize().mult(2));
+      //spineB.acceleration.add(vecIntoA.rotate(-45).normalize().mult(2));
     }
   }
   
@@ -102,10 +102,10 @@ class Spine {
           this.acceleration.add(direction.copy().mult(1));
           
           
-          println("REPULSION");
-          stroke(255,0,0);
-          strokeWeight(2);
-          line(this.position.x, height - this.position.y, this.position.x + direction.copy().mult(105).x, (height - this.position.y) - direction.copy().mult(105).y);
+          //println("REPULSION");
+          //stroke(255,0,0);
+          //strokeWeight(2);
+          //line(this.position.x, height - this.position.y, this.position.x + direction.copy().mult(105).x, (height - this.position.y) - direction.copy().mult(105).y);
         }
       }
     }

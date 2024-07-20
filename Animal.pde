@@ -2,17 +2,19 @@ class Animal {
   private float[] bodysize;
   private ArrayList<Spine> spines;
 
+  private vector3 aColor;
   private float randomSeed;
 
   Animal(float[] _bodysize) {
     bodysize = _bodysize;
     this.spines = this.buildSpines();
     this.randomSeed = random(10000);
+    this.aColor = new vector3(int(random(150,255)), int(random(150,255)), int(random(150,255)));
   }
 
   private ArrayList<Spine> buildSpines() {
     ArrayList<Spine> deltaSpines = new ArrayList<>();
-    vector2 position = new vector2(random(0, width), random(0, height));
+    vector2 position = new vector2(random(0, width - (animalScale*100)), random(0, height));
     for (int i = 0; i < this.bodysize.length; i++) {
       deltaSpines.add(new Spine(this.bodysize[i], new vector2((i * 7 * animalScale) + position.x, height - position.y)));
     }
@@ -27,12 +29,12 @@ class Animal {
         if (mousePressed) {
           spine.acceleration.add(spine.position.copy().add(new vector2(mouseX, height-mouseY).mult(-1)).mult(-0.002));
         } else {
-          //spine.acceleration.add(new vector2(noise(millis()/500f + this.randomSeed) - 0.475, noise(millis()/500f+this.randomSeed+500) - 0.475).mult(1));
+          spine.acceleration.add(new vector2(noise(millis()/500f + this.randomSeed) - 0.475, noise(millis()/500f+this.randomSeed+500) - 0.475).mult(1));
         }
       }
 
       if (i != spines.size()-1) {
-        //spine.joinLink(this.spines.get(i+1), 7 * animalScale);
+        spine.joinLink(this.spines.get(i+1), 7 * animalScale);
       }
       if (i != spines.size()-1 && i != 0) {
         spine.limitAngle(this.spines.get(i-1), spine, this.spines.get(i+1), 45);
@@ -42,7 +44,7 @@ class Animal {
       Spine spine = this.spines.get(i);
       spine.update();
     }
-    println("WormDone\n");
+    //println("WormDone\n");
   }
 
   public void renderDebug() {
@@ -73,9 +75,10 @@ class Animal {
 
     Spine spine = this.spines.get(1);
 
-    strokeWeight(animalScale);
-    strokeJoin(ROUND);
-    stroke(255);
+    body.strokeWeight(animalScale * 2);
+    body.stroke(color(this.aColor.x - 50, this.aColor.y - 50, this.aColor.z - 50));
+
+    body.fill(this.aColor.x, this.aColor.y, this.aColor.z);
 
     for (int i = 1; i < this.spines.size(); i++) {
       spine = this.spines.get(i);
@@ -103,10 +106,12 @@ class Animal {
     for (int i = side.length-1; i > 0; i--) {
       body.curveVertex(side[i].x, side[i].y);
     }
-
     body.endShape(CLOSE);
 
+
+
     shape(body, 0, 0);
+
 
     pop();
   }
